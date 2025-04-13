@@ -54,9 +54,19 @@ router.get('/', async (req, res) => {
  *     responses:
  *       201:
  *         description: Tạo thành công
+ *       400:
+ *         description: Tên công ty đã tồn tại
  */
 router.post('/', async (req, res) => {
   try {
+    const { name } = req.body;
+
+    // Kiểm tra xem công ty đã tồn tại chưa
+    const existingCompany = await Company.findOne({ name });
+    if (existingCompany) {
+      return res.status(400).json({ error: 'Company name already exists' });
+    }
+
     const company = new Company(req.body);
     await company.save();
     res.status(201).json(company);
@@ -122,12 +132,24 @@ router.get('/:id', async (req, res) => {
  *     responses:
  *       200:
  *         description: Đã cập nhật
+ *       400:
+ *         description: Tên công ty đã tồn tại
+ *       404:
+ *         description: Không tìm thấy
  */
 router.put('/:id', async (req, res) => {
   try {
-    const updated = await Company.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!updated) return res.status(404).json({ error: 'Not found' });
-    res.json(updated);
+    const { name } = req.body;
+
+    // Kiểm tra xem tên công ty có bị trùng với công ty khác không
+    const existingCompany = await Company.findOne({ name, _id: { $ne: req.params.id } });
+    if (existingCompany) {
+      return res.status(400).json({ error: 'Company name already exists' });
+    }
+
+    const updatedCompany = await Company.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updatedCompany) return res.status(404).json({ error: 'Not found' });
+    res.json(updatedCompany);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -151,8 +173,8 @@ router.put('/:id', async (req, res) => {
  */
 router.delete('/:id', async (req, res) => {
   try {
-    const deleted = await Company.findByIdAndDelete(req.params.id);
-    if (!deleted) return res.status(404).json({ error: 'Not found' });
+    const deletedCompany = await Company.findByIdAndDelete(req.params.id);
+    if (!deletedCompany) return res.status(404).json({ error: 'Not found' });
     res.json({ message: 'Deleted successfully' });
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -55,8 +55,12 @@ router.get('/', async (req, res) => {
 router.post('/post', async (req, res) => {
     try {
         const { name } = req.body;
+
+        // Kiểm tra role đã tồn tại chưa
         const existing = await Role.findOne({ name });
-        if (existing) return res.status(400).json({ error: 'Role already exists' });
+        if (existing) {
+            return res.status(400).json({ error: 'Role already exists' });
+        }
 
         const role = new Role({ name });
         await role.save();
@@ -122,12 +126,21 @@ router.get('/:id', async (req, res) => {
  *     responses:
  *       200:
  *         description: Role đã được cập nhật
+ *       400:
+ *         description: Role đã tồn tại
  *       404:
  *         description: Role không tồn tại
  */
 router.put('/:id', async (req, res) => {
     try {
         const { name } = req.body;
+
+        // Kiểm tra trùng tên với role khác
+        const existing = await Role.findOne({ name, _id: { $ne: req.params.id } });
+        if (existing) {
+            return res.status(400).json({ error: 'Role name already exists' });
+        }
+
         const updatedRole = await Role.findByIdAndUpdate(
             req.params.id,
             { name },
