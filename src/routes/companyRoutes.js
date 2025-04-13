@@ -141,7 +141,7 @@ router.put('/:id', async (req, res) => {
   try {
     const { name } = req.body;
 
-    // Kiểm tra xem tên công ty có bị trùng với công ty khác không
+    // Kiểm tra xem tên công ty có bị trùng với công ty khác không, ngoại trừ công ty hiện tại
     const existingCompany = await Company.findOne({ name, _id: { $ne: req.params.id } });
     if (existingCompany) {
       return res.status(400).json({ error: 'Company name already exists' });
