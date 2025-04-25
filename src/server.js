@@ -9,6 +9,10 @@ const teamRoutes = require('./routes/teamRoutes');
 const userRoutes = require('./routes/userRoutes');
 const taskStatusRoutes = require('./routes/taskStatusRoutes');
 const taskApprovalStatusRoutes = require('./routes/taskApprovalStatusRoutes');
+const taskRoutes = require('./routes/taskRoutes');
+const taskStageRoutes = require('./routes/taskStageRoutes');
+const taskMessageRoutes = require('./routes/taskMessageRoutes');
+const taskPermissionRoutes = require('./routes/taskPermissionRoutes');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 
@@ -27,13 +31,13 @@ const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'API ProFusion',
+      title: 'API Workprise',
       version: '1.0.0',
-      description: 'Tài liệu API cho dự án ProFusion'
+      description: 'Tài liệu API cho dự án Workprise'
     },
     servers: [
       {
-        url: 'http://localhost:5001', // Đảm bảo URL này là chính xác
+        url: 'https://qthl-group.onrender.com', // Đảm bảo URL này là chính xác
       },
     ],
     components: {
@@ -79,6 +83,14 @@ app.use('/api/task-status', taskStatusRoutes);
 
 // Task Approval Status API
 app.use('/api/task-approval-status', taskApprovalStatusRoutes);
+
+app.use('/api/task', taskRoutes);
+
+app.use('/api/task-stage', taskStageRoutes);
+
+app.use('/api/task-message', taskMessageRoutes);
+
+app.use('/api/task-permission', taskPermissionRoutes);
 
 // Kiểm tra API hoạt động
 app.get('/', (req, res) => {
