@@ -1,6 +1,11 @@
 const express = require('express');
 const Role = require('../models/roleModel');
 const router = express.Router();
+const authMiddleware = require('../middleware/authMiddleware');
+
+
+// ✅ Áp dụng authMiddleware cho tất cả route từ đây trở xuống
+router.use(authMiddleware);
 
 /**
  * @swagger
