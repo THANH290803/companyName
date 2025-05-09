@@ -107,6 +107,38 @@ router.get('/:id', async (req, res) => {
 
 /**
  * @swagger
+ * /api/department/company/{company_id}:
+ *   get:
+ *     summary: Lấy danh sách phòng ban theo công ty
+ *     tags: [Departments]
+ *     parameters:
+ *       - name: company_id
+ *         in: path
+ *         description: ID của công ty
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Trả về danh sách phòng ban theo công ty
+ *       404:
+ *         description: Không tìm thấy phòng ban
+ */
+router.get('/company/:company_id', async (req, res) => {
+    try {
+        const departments = await Department.find({ company_id: req.params.company_id }).populate('company_id');
+        if (!departments.length) {
+            return res.status(404).json({ error: 'No departments found for this company' });
+        }
+        res.json(departments);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+/**
+ * @swagger
  * /api/department/{id}:
  *   put:
  *     summary: Cập nhật phòng ban

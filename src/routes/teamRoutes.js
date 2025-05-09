@@ -193,4 +193,35 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /api/team/department/{department_id}:
+ *   get:
+ *     summary: Lấy danh sách team theo phòng ban
+ *     tags: [Teams]
+ *     parameters:
+ *       - name: department_id
+ *         in: path
+ *         description: ID phòng ban
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Danh sách các team thuộc phòng ban
+ *       404:
+ *         description: Không tìm thấy team nào
+ */
+router.get('/department/:department_id', async (req, res) => {
+    try {
+      const teams = await Team.find({ department_id: req.params.department_id }).populate('department_id');
+      if (!teams.length) {
+        return res.status(404).json({ error: 'No teams found for this department' });
+      }
+      res.json(teams);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });  
+
 module.exports = router;
