@@ -13,6 +13,7 @@ const taskRoutes = require('./routes/taskRoutes');
 const taskStageRoutes = require('./routes/taskStageRoutes');
 const taskMessageRoutes = require('./routes/taskMessageRoutes');
 const taskPermissionRoutes = require('./routes/taskPermissionRoutes');
+const projectRoutes = require('./routes/projectRoutes');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 
@@ -91,6 +92,8 @@ app.use('/api/task-stage', taskStageRoutes);
 app.use('/api/task-message', taskMessageRoutes);
 
 app.use('/api/task-permission', taskPermissionRoutes);
+
+app.use('/api/project', projectRoutes);
 
 // Kiểm tra API hoạt động
 app.get('/', (req, res) => {
