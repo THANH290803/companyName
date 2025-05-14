@@ -84,18 +84,31 @@ router.post('/post', async (req, res) => {
     try {
         const { name, description, created_by, company_id, department_id, team_id, start_date, end_date } = req.body;
 
+        // Check if department_id or team_id is an empty string, and replace with null
+        const projectData = {
+            name,
+            description,
+            created_by,
+            company_id,
+            department_id: department_id || null, // Replace empty string with null
+            team_id: team_id || null, // Replace empty string with null
+            start_date,
+            end_date
+        };
+
         const existing = await Project.findOne({ name });
         if (existing) {
             return res.status(400).json({ error: 'Project already exists' });
         }
 
-        const project = new Project({ name, description, created_by, company_id, department_id, team_id, start_date, end_date });
+        const project = new Project(projectData);
         await project.save();
         res.status(201).json(project);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
+
 
 /**
  * @swagger
