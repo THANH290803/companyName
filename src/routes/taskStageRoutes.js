@@ -9,7 +9,7 @@ router.use(authMiddleware);
  * @swagger
  * tags:
  *   name: TaskStages
- *   description: API quản lý các giai đoạn của nhiệm vụ (task stages)
+ *   description: API quản lý các giai đoạn của project (task stages)
  */
 
 /**
@@ -24,7 +24,7 @@ router.use(authMiddleware);
  */
 router.get('/', async (req, res) => {
   try {
-    const stages = await TaskStage.find().populate('task_id');
+    const stages = await TaskStage.find().populate('project_id');
     res.json(stages);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -43,18 +43,12 @@ router.get('/', async (req, res) => {
  *         application/json:
  *           schema:
  *             type: object
- *             required: [task_id, title]
+ *             required: [project_id, title]
  *             properties:
- *               task_id:
+ *               project_id:
  *                 type: string
  *               title:
  *                 type: string
- *               deadline:
- *                 type: string
- *                 format: date-time
- *               completed_at:
- *                 type: string
- *                 format: date-time
  *     responses:
  *       201:
  *         description: Task stage đã được tạo
@@ -89,7 +83,7 @@ router.post('/post', async (req, res) => {
  */
 router.get('/:id', async (req, res) => {
   try {
-    const stage = await TaskStage.findById(req.params.id).populate('task_id');
+    const stage = await TaskStage.findById(req.params.id).populate('project_id');
     if (!stage) return res.status(404).json({ error: 'Task stage not found' });
     res.json(stage);
   } catch (err) {
@@ -117,12 +111,6 @@ router.get('/:id', async (req, res) => {
  *             properties:
  *               title:
  *                 type: string
- *               deadline:
- *                 type: string
- *                 format: date-time
- *               completed_at:
- *                 type: string
- *                 format: date-time
  *     responses:
  *       200:
  *         description: Task stage đã được cập nhật
