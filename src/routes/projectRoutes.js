@@ -7,13 +7,13 @@ const authMiddleware = require('../middleware/authMiddleware');
 router.use(authMiddleware);
 
 const getCode = (name) => {
-  const words = name.trim().split(/\s+/);
-  let abbr = words.length >= 3
-    ? words.slice(0, 3).map(w => w[0])
-    : words.join('').padEnd(3, 'X').slice(0, 3);
-  const date = new Date();
-  const dateStr = `${String(date.getDate()).padStart(2, '0')}${String(date.getMonth()+1).padStart(2, '0')}${date.getFullYear()}`;
-  return `${abbr.toUpperCase()}-${dateStr}`;
+    const words = name.trim().split(/\s+/);
+    let abbr = words.length >= 3
+        ? words.slice(0, 3).map(w => w[0])
+        : words.join('').padEnd(3, 'X').slice(0, 3);
+    const date = new Date();
+    const dateStr = `${String(date.getDate()).padStart(2, '0')}${String(date.getMonth() + 1).padStart(2, '0')}${date.getFullYear()}`;
+    return `${abbr.toUpperCase()}-${dateStr}`;
 };
 
 /**
@@ -91,36 +91,36 @@ router.get('/', async (req, res) => {
  *         description: Project đã tồn tại
  */
 router.post('/post', async (req, res) => {
-  try {
-    const { name, description, created_by, company_id, department_id, team_id, start_date, end_date } = req.body;
-    if (!name || !created_by || !company_id)
-      return res.status(400).json({ message: 'Thiếu thông tin bắt buộc' });
+    try {
+        const { name, description, created_by, company_id, department_id, team_id, start_date, end_date } = req.body;
+        if (!name || !created_by || !company_id)
+            return res.status(400).json({ message: 'Thiếu thông tin bắt buộc' });
 
-    // Kiểm tra trùng tên
-    const exists = await Project.findOne({ where: { name } });
-    if (exists)
-      return res.status(400).json({ message: 'Tên dự án đã tồn tại' });
+        // Kiểm tra trùng tên
+        const exists = await Project.findOne({ where: { name } });
+        if (exists)
+            return res.status(400).json({ message: 'Tên dự án đã tồn tại' });
 
-    // Tạo code
-    const code = getCode(name);
+        // Tạo code
+        const code = getCode(name);
 
-    // Tạo project mới
-    const project = await Project.create({
-      name,
-      description,
-      created_by,
-      company_id,
-      department_id,
-      team_id,
-      start_date,
-      end_date,
-      code
-    });
+        // Tạo project mới
+        const project = await Project.create({
+            name,
+            description: description || null,
+            created_by,
+            company_id,
+            department_id: department_id || null,
+            team_id: team_id || null,
+            start_date: start_date || null,
+            end_date: end_date || null,
+            code
+        });
 
-    res.status(201).json({ message: 'Tạo dự án thành công', projectId: project.id, code });
-  } catch (err) {
-    res.status(500).json({ message: 'Lỗi máy chủ', error: err.message });
-  }
+        res.status(201).json({ message: 'Tạo dự án thành công', projectId: project.id, code });
+    } catch (err) {
+        res.status(500).json({ message: 'Lỗi máy chủ', error: err.message });
+    }
 });
 
 
