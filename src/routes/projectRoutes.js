@@ -90,7 +90,7 @@ router.get('/', async (req, res) => {
  *       400:
  *         description: Project đã tồn tại
  */
-router.post('/projects', async (req, res) => {
+router.post('/post', async (req, res) => {
   try {
     const { name, description, created_by, company_id, department_id, team_id, start_date, end_date } = req.body;
     if (!name || !created_by || !company_id)
