@@ -8,13 +8,34 @@ router.use(authMiddleware);
 
 const getCode = (name) => {
     const words = name.trim().split(/\s+/);
-    let abbr = words.length >= 3
-        ? words.slice(0, 3).map(w => w[0])
-        : words.join('').padEnd(3, 'X').slice(0, 3);
+    let abbr = '';
+
+    if (words.length >= 3) {
+        // Lấy ký tự đầu của 3 từ đầu tiên
+        abbr = words.slice(0, 3).map(w => w[0]).join('');
+    } else if (words.length === 2) {
+        // Lấy ký tự đầu của 2 từ + ký tự thứ 2 của từ đầu
+        abbr = words[0][0] + words[1][0] + (words[0][1] || 'X');
+    } else if (words.length === 1) {
+        const w = words[0];
+        if (w.length >= 3) {
+            abbr = w[0] + w[Math.floor(w.length / 2)] + w[w.length - 1];
+        } else {
+            // Nếu từ ngắn hơn 3 ký tự thì lấy hết và pad thêm X
+            abbr = w.padEnd(3, 'X');
+        }
+    } else {
+        abbr = 'XXX'; // trường hợp name rỗng, mặc định
+    }
+
+    abbr = abbr.toUpperCase().padEnd(3, 'X'); // đảm bảo 3 ký tự
+
     const date = new Date();
     const dateStr = `${String(date.getDate()).padStart(2, '0')}${String(date.getMonth() + 1).padStart(2, '0')}${date.getFullYear()}`;
-    return `${abbr.toUpperCase()}-${dateStr}`;
+
+    return `${abbr}-${dateStr}`;
 };
+
 
 /**
  * @swagger
