@@ -84,22 +84,37 @@ router.post('/post', async (req, res) => {
     try {
         const { name, description, created_by, company_id, department_id, team_id, start_date, end_date } = req.body;
 
-        // Check if department_id or team_id is an empty string, and replace with null
-        const projectData = {
-            name,
-            description,
-            created_by,
-            company_id,
-            department_id: department_id || null, // Replace empty string with null
-            team_id: team_id || null, // Replace empty string with null
-            start_date,
-            end_date
-        };
-
+        // Check if name already exists
         const existing = await Project.findOne({ name });
         if (existing) {
             return res.status(400).json({ error: 'Project already exists' });
         }
+
+        // Generate project code
+        const abbreviation = name
+            .split(' ')
+            .map(word => word[0])
+            .join('')
+            .toUpperCase();
+
+        const now = new Date();
+        const dd = String(now.getDate()).padStart(2, '0');
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const yyyy = now.getFullYear();
+
+        const code = `${abbreviation}-${dd}${mm}${yyyy}`;
+
+        const projectData = {
+            name,
+            code,
+            description,
+            created_by,
+            company_id,
+            department_id: department_id || null,
+            team_id: team_id || null,
+            start_date,
+            end_date
+        };
 
         const project = new Project(projectData);
         await project.save();

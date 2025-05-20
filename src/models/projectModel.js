@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const projectSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  code: { type: String, required: true, unique: true },
   description: { type: String, required: false },
   created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   company_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', default: null },
