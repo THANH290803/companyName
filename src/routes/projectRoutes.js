@@ -6,6 +6,16 @@ const authMiddleware = require('../middleware/authMiddleware');
 // Apply authMiddleware for all routes below
 router.use(authMiddleware);
 
+const getCode = (name) => {
+  const words = name.trim().split(/\s+/);
+  let abbr = words.length >= 3
+    ? words.slice(0, 3).map(w => w[0])
+    : words.join('').padEnd(3, 'X').slice(0, 3);
+  const date = new Date();
+  const dateStr = `${String(date.getDate()).padStart(2, '0')}${String(date.getMonth()+1).padStart(2, '0')}${date.getFullYear()}`;
+  return `${abbr.toUpperCase()}-${dateStr}`;
+};
+
 /**
  * @swagger
  * tags:
@@ -80,48 +90,28 @@ router.get('/', async (req, res) => {
  *       400:
  *         description: Project đã tồn tại
  */
-router.post('/post', async (req, res) => {
-    try {
-        const { name, description, created_by, company_id, department_id, team_id, start_date, end_date } = req.body;
+router.post('/projects', async (req, res) => {
+  try {
+    const { name, description, created_by, company_id, department_id, team_id, start_date, end_date } = req.body;
+    if (!name || !created_by || !company_id)
+      return res.status(400).json({ message: 'Thiếu thông tin bắt buộc' });
 
-        // Check if name already exists
-        const existing = await Project.findOne({ name });
-        if (existing) {
-            return res.status(400).json({ error: 'Project already exists' });
-        }
+    // Kiểm tra trùng tên
+    const [exists] = await db.execute('SELECT id FROM projects WHERE name = ?', [name]);
+    if (exists.length > 0)
+      return res.status(400).json({ message: 'Tên dự án đã tồn tại' });
 
-        // Generate project code
-        const abbreviation = name
-            .split(' ')
-            .map(word => word[0])
-            .join('')
-            .toUpperCase();
+    const code = getCode(name);
+    const [result] = await db.execute(
+      `INSERT INTO projects (name, description, created_by, company_id, department_id, team_id, start_date, end_date, code)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [name, description, created_by, company_id, department_id, team_id, start_date, end_date, code]
+    );
 
-        const now = new Date();
-        const dd = String(now.getDate()).padStart(2, '0');
-        const mm = String(now.getMonth() + 1).padStart(2, '0');
-        const yyyy = now.getFullYear();
-
-        const code = `${abbreviation}-${dd}${mm}${yyyy}`;
-
-        const projectData = {
-            name,
-            code,
-            description,
-            created_by,
-            company_id,
-            department_id: department_id || null,
-            team_id: team_id || null,
-            start_date,
-            end_date
-        };
-
-        const project = new Project(projectData);
-        await project.save();
-        res.status(201).json(project);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    res.status(201).json({ message: 'Tạo dự án thành công', projectId: result.insertId, code });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi máy chủ', error: err.message });
+  }
 });
 
 
