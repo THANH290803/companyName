@@ -97,13 +97,13 @@ router.post('/post', async (req, res) => {
       return res.status(400).json({ message: 'Thiếu thông tin bắt buộc' });
 
     // Kiểm tra trùng tên
-    const [exists] = await db.execute('SELECT id FROM project WHERE name = ?', [name]);
+    const [exists] = await db.execute('SELECT id FROM company.projects WHERE name = ?', [name]);
     if (exists.length > 0)
       return res.status(400).json({ message: 'Tên dự án đã tồn tại' });
 
     const code = getCode(name);
     const [result] = await db.execute(
-      `INSERT INTO project (name, description, created_by, company_id, department_id, team_id, start_date, end_date, code)
+      `INSERT INTO company.projects (name, description, created_by, company_id, department_id, team_id, start_date, end_date, code)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [name, description, created_by, company_id, department_id, team_id, start_date, end_date, code]
     );
