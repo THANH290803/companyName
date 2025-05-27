@@ -24,7 +24,7 @@ router.use(authMiddleware);
  */
 router.get('/', async (req, res) => {
     try {
-        const tasks = await Task.find().populate('created_by assigned_to status_id approval_status_id');
+        const tasks = await Task.find().populate('created_by assigned_to status_id task_stage_id');
         res.json(tasks);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -55,7 +55,7 @@ router.get('/', async (req, res) => {
  *                 type: string
  *               status_id:
  *                 type: string
- *               approval_status_id:
+ *               task_stage_id:
  *                 type: string
  *               deadline:
  *                 type: string
@@ -94,7 +94,7 @@ router.post('/post', async (req, res) => {
  */
 router.get('/:id', async (req, res) => {
     try {
-        const task = await Task.findById(req.params.id).populate('created_by assigned_to status_id approval_status_id');
+        const task = await Task.findById(req.params.id).populate('created_by assigned_to status_id task_stage_id');
         if (!task) return res.status(404).json({ error: 'Task not found' });
         res.json(task);
     } catch (err) {
@@ -128,7 +128,7 @@ router.get('/:id', async (req, res) => {
  *                 type: string
  *               status_id:
  *                 type: string
- *               approval_status_id:
+ *               task_stage_id:
  *                 type: string
  *               deadline:
  *                 type: string

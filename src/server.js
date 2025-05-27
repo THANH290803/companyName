@@ -8,7 +8,6 @@ const departmentRoutes = require('./routes/departmentRoutes');
 const teamRoutes = require('./routes/teamRoutes');
 const userRoutes = require('./routes/userRoutes');
 const taskStatusRoutes = require('./routes/taskStatusRoutes');
-const taskApprovalStatusRoutes = require('./routes/taskApprovalStatusRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const taskStageRoutes = require('./routes/taskStageRoutes');
 const taskMessageRoutes = require('./routes/taskMessageRoutes');
@@ -81,9 +80,6 @@ app.use('/api/user', userRoutes);
 
 // Task Status API
 app.use('/api/task-status', taskStatusRoutes);
-
-// Task Approval Status API
-app.use('/api/task-approval-status', taskApprovalStatusRoutes);
 
 app.use('/api/task', taskRoutes);
 
