@@ -33,6 +33,37 @@ router.get('/', async (req, res) => {
 
 /**
  * @swagger
+ * /api/task-stage/project/{projectId}:
+ *   get:
+ *     summary: Lấy danh sách các task stages theo project_id
+ *     tags: [TaskStages]
+ *     parameters:
+ *       - name: projectId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Danh sách task stages theo project_id
+ *       404:
+ *         description: Không tìm thấy task stages
+ */
+router.get('/project/:projectId', async (req, res) => {
+  try {
+    const stages = await TaskStage.find({ project_id: req.params.projectId }).populate('project_id');
+    if (!stages || stages.length === 0) {
+      return res.status(404).json({ error: 'No task stages found for this project_id' });
+    }
+    res.json(stages);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+/**
+ * @swagger
  * /api/task-stage/post:
  *   post:
  *     summary: Tạo giai đoạn task mới
