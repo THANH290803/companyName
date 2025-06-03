@@ -31,29 +31,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-/**
- * @swagger
- * /api/task:
- *   get:
- *     summary: Lấy danh sách các task (có thể lọc theo status_id và task_stage_id)
- *     tags: [Tasks]
- *     parameters:
- *       - name: status_id
- *         in: query
- *         schema:
- *           type: string
- *         required: false
- *         description: ID của trạng thái nhiệm vụ
- *       - name: task_stage_id
- *         in: query
- *         schema:
- *           type: string
- *         required: false
- *         description: ID của giai đoạn nhiệm vụ
- *     responses:
- *       200:
- *         description: Trả về danh sách task
- */
+
 /**
  * @swagger
  * /api/task/filter/{status_id}/{task_stage_id}:
