@@ -54,16 +54,45 @@ router.get('/', async (req, res) => {
  *       200:
  *         description: Trả về danh sách task
  */
-router.get('/', async (req, res) => {
+/**
+ * @swagger
+ * /api/task/filter/{status_id}/{task_stage_id}:
+ *   get:
+ *     summary: Lấy danh sách task theo status_id và task_stage_id
+ *     tags: [Tasks]
+ *     parameters:
+ *       - name: status_id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID trạng thái task
+ *       - name: task_stage_id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID giai đoạn task
+ *     responses:
+ *       200:
+ *         description: Trả về danh sách task phù hợp
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Task'
+ *       500:
+ *         description: Lỗi server
+ */
+router.get('/filter/:status_id/:task_stage_id', async (req, res) => {
     try {
-        const { status_id, task_stage_id } = req.query;
+        const { status_id, task_stage_id } = req.params;
 
-        const filter = {};
-        if (status_id) filter.status_id = status_id;
-        if (task_stage_id) filter.task_stage_id = task_stage_id;
-
-        const tasks = await Task.find(filter)
-            .populate('created_by assigned_to status_id task_stage_id');
+        const tasks = await Task.find({
+            status_id,
+            task_stage_id
+        }).populate('created_by assigned_to status_id task_stage_id');
 
         res.json(tasks);
     } catch (err) {
